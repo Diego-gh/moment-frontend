@@ -1,0 +1,36 @@
+{
+  "auth": {
+    "headers": {
+      "login": "Login",
+      "register": "Register"
+    },
+    "email": {
+      "label": "Email",
+      "placeholder": "Enter your email",
+      "error": "Invalid email format"
+    },
+    "password": {
+      "label": "Password",
+      "placeholder": "Enter your password",
+      "error": "Password must be at least {{min}} characters long"
+    },
+    "username": {
+      "label": "Username",
+      "placeholder": "Enter your username",
+      "error": "Username must be at least {{min}} characters long"
+    },
+    "displayName": {
+      "label": "Display Name",
+      "placeholder": "Enter your display name",
+      "error": "Display name must be at least {{min}} characters long"
+    },
+    "termsOfService": {
+      "label": "I agree to the Terms of Service",
+      "error": "You must agree to the Terms of Service"
+    },
+    "links": {
+      "register": "Don't have an account?",
+      "login": "Already have an account?"
+    }
+  }
+}

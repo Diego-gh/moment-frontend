@@ -2,5 +2,5 @@
   display: flex;
   flex-direction: row;
   height: 50px;
-  background-color: rgb(109, 171, 252);
+  border: 1px solid #387e95;
 }
