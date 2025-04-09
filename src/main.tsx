@@ -6,7 +6,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 
 import './translations/i18n';
 import '@mantine/core/styles.css';
-import AppLayout from './routes/layout/AppLayout';
+import App from './App';
 
 const HomePage = React.lazy(() => import('./routes/home/HomePage'));
 const LoginPage = React.lazy(() => import('./routes/auth/LoginPage'));
@@ -26,7 +26,7 @@ createRoot(document.getElementById('root')!).render(
       <MantineProvider theme={theme}>
         <BrowserRouter>
           <Routes>
-            <Route element={<AppLayout />}>
+            <Route element={<App />}>
               <Route path='/' element={<HomePage />} />
               <Route path='/:username' element={<ProfilePage />} />
             </Route>
