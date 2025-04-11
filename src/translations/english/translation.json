@@ -31,6 +31,20 @@
     "links": {
       "register": "Don't have an account?",
       "login": "Already have an account?"
+    },
+    "notification": {
+      "login": {
+        "error": {
+          "title": "Login failed",
+          "message": "Please check your credentials and try again."
+        }
+      },
+      "register": {
+        "error": {
+          "title": "Registration failed",
+          "message": "Please check your details and try again."
+        }
+      }
     }
   }
 }

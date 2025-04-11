@@ -1,4 +1,6 @@
+import { useState } from 'react';
 import { useForm, isEmail } from '@mantine/form';
+import { notifications } from '@mantine/notifications';
 import {
   TextInput,
   PasswordInput,
@@ -8,6 +10,9 @@ import {
 } from '@mantine/core';
 import { AtSign } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
+import { useMutation } from '@tanstack/react-query';
+import { RegisterFormType } from './types';
+import { registerUser } from '../../api/auth';
 
 import css from './RegisterPage.module.css';
 
@@ -24,19 +29,39 @@ import {
 const RegisterPage = () => {
   const { t } = useTranslation();
 
+  const [loading, setLoading] = useState(false);
+
+  const mutation = useMutation({
+    mutationFn: registerUser,
+    onSuccess: (data) => {
+      console.log('Registration successful:', data);
+      setLoading(false);
+    },
+    onError: () => {
+      notifications.show({
+        color: 'red',
+        title: t('auth.notication.register.error.title'),
+        message: t('auth.notication.register.error.message'),
+        autoClose: 5000,
+        position: 'top-center',
+      });
+      setLoading(false);
+    },
+  });
+
   const form = useForm({
     initialValues: {
       displayName: '',
       username: '',
       email: '',
       password: '',
-      termsOfService: false,
+      termsOfServiceAgreed: false,
     },
 
     validate: {
       username: (value) =>
         value.length < USERNAME_MIN_LENGTH
-          ? t('auth.name.error', { min: USERNAME_MIN_LENGTH })
+          ? t('auth.username.error', { min: USERNAME_MIN_LENGTH })
           : null,
       displayName: (value) =>
         value.length < DISPLAY_NAME_MIN_LENGTH
@@ -47,17 +72,15 @@ const RegisterPage = () => {
         value.length < PASSWORD_MIN_LENGTH
           ? t('auth.password.error', { min: PASSWORD_MIN_LENGTH })
           : null,
-      termsOfService: (value) =>
+      termsOfServiceAgreed: (value) =>
         value ? null : t('auth.termsOfService.error'),
     },
   });
 
-  const handleSubmit = (values: {
-    username: string;
-    email: string;
-    password: string;
-  }) => {
-    console.log('Form submitted:', values);
+  const handleSubmit = (formData: RegisterFormType) => {
+    console.log('Form submitted:', formData);
+    mutation.mutate(formData);
+    setLoading(true);
   };
 
   return (
@@ -99,13 +122,16 @@ const RegisterPage = () => {
           {...form.getInputProps('password')}
         />
         <Checkbox
-          mt='md'
-          label='I agree to sell my privacy'
-          key={form.key('termsOfService')}
-          {...form.getInputProps('termsOfService', { type: 'checkbox' })}
+          label={t('auth.termsOfService.label')}
+          key={form.key('termsOfServiceAgreed')}
+          {...form.getInputProps('termsOfServiceAgreed', {
+            type: 'checkbox',
+          })}
         />
         <Group justify='flex-end'>
-          <Button type='submit'>Submit</Button>
+          <Button type='submit' loading={loading}>
+            Submit
+          </Button>
         </Group>
       </form>
     </div>
