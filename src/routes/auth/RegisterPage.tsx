@@ -1,30 +1,28 @@
 import { useState } from 'react';
-import { useForm, isEmail } from '@mantine/form';
+import { useForm } from '@mantine/form';
 import { notifications } from '@mantine/notifications';
-import {
-  TextInput,
-  PasswordInput,
-  Button,
-  Checkbox,
-  Group,
-} from '@mantine/core';
+import { TextInput, PasswordInput, Button, Group } from '@mantine/core';
+import { zodResolver } from 'mantine-form-zod-resolver';
 import { AtSign } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useMutation } from '@tanstack/react-query';
-import { RegisterFormType } from './types';
-import { registerUser } from '../../api/auth';
+import { registerUser } from '../../api/user';
+import {
+  EMAIL_MAX_LENGTH,
+  PASSWORD_MAX_LENGTH,
+  USERNAME_MAX_LENGTH,
+  DISPLAY_NAME_MAX_LENGTH,
+  registerUserSchema,
+} from '../../validation/user';
 
 import css from './RegisterPage.module.css';
 
-import {
-  EMAIL_MAX_LENGTH,
-  PASSWORD_MIN_LENGTH,
-  PASSWORD_MAX_LENGTH,
-  USERNAME_MIN_LENGTH,
-  USERNAME_MAX_LENGTH,
-  DISPLAY_NAME_MIN_LENGTH,
-  DISPLAY_NAME_MAX_LENGTH,
-} from './constants';
+const initialValues = {
+  displayName: '',
+  username: '',
+  email: '',
+  password: '',
+};
 
 const RegisterPage = () => {
   const { t } = useTranslation();
@@ -40,8 +38,8 @@ const RegisterPage = () => {
     onError: () => {
       notifications.show({
         color: 'red',
-        title: t('auth.notication.register.error.title'),
-        message: t('auth.notication.register.error.message'),
+        title: t('auth.notification.register.error.title'),
+        message: t('auth.notification.register.error.message'),
         autoClose: 5000,
         position: 'top-center',
       });
@@ -50,34 +48,11 @@ const RegisterPage = () => {
   });
 
   const form = useForm({
-    initialValues: {
-      displayName: '',
-      username: '',
-      email: '',
-      password: '',
-      termsOfServiceAgreed: false,
-    },
-
-    validate: {
-      username: (value) =>
-        value.length < USERNAME_MIN_LENGTH
-          ? t('auth.username.error', { min: USERNAME_MIN_LENGTH })
-          : null,
-      displayName: (value) =>
-        value.length < DISPLAY_NAME_MIN_LENGTH
-          ? t('auth.displayName.error', { min: DISPLAY_NAME_MIN_LENGTH })
-          : null,
-      email: isEmail(t('auth.email.error')),
-      password: (value) =>
-        value.length < PASSWORD_MIN_LENGTH
-          ? t('auth.password.error', { min: PASSWORD_MIN_LENGTH })
-          : null,
-      termsOfServiceAgreed: (value) =>
-        value ? null : t('auth.termsOfService.error'),
-    },
+    initialValues,
+    validate: zodResolver(registerUserSchema),
   });
 
-  const handleSubmit = (formData: RegisterFormType) => {
+  const handleSubmit = (formData: typeof initialValues) => {
     console.log('Form submitted:', formData);
     mutation.mutate(formData);
     setLoading(true);
@@ -120,13 +95,6 @@ const RegisterPage = () => {
           maxLength={PASSWORD_MAX_LENGTH}
           key={form.key('password')}
           {...form.getInputProps('password')}
-        />
-        <Checkbox
-          label={t('auth.termsOfService.label')}
-          key={form.key('termsOfServiceAgreed')}
-          {...form.getInputProps('termsOfServiceAgreed', {
-            type: 'checkbox',
-          })}
         />
         <Group justify='flex-end'>
           <Button type='submit' loading={loading}>

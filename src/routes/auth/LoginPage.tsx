@@ -1,36 +1,31 @@
-import { useForm, isEmail } from '@mantine/form';
+import { useForm } from '@mantine/form';
 import { TextInput, PasswordInput, Button, Group } from '@mantine/core';
+import { zodResolver } from 'mantine-form-zod-resolver';
 import { AtSign } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
-
-import css from './LoginPage.module.css';
-
 import {
   EMAIL_MAX_LENGTH,
   PASSWORD_MAX_LENGTH,
-  PASSWORD_MIN_LENGTH,
-} from './constants';
+  loginUserSchema,
+} from '../../validation/user';
+
+import css from './LoginPage.module.css';
+
+const initialValues = {
+  email: '',
+  password: '',
+};
 
 const LoginPage = () => {
   const { t } = useTranslation();
 
   const form = useForm({
-    initialValues: {
-      email: '',
-      password: '',
-    },
-
-    validate: {
-      email: isEmail(t('auth.email.error')),
-      password: (value) =>
-        value.length < PASSWORD_MIN_LENGTH
-          ? t('auth.password.error', { min: PASSWORD_MIN_LENGTH })
-          : null,
-    },
+    initialValues,
+    validate: zodResolver(loginUserSchema),
   });
 
-  const handleSubmit = (values: { email: string; password: string }) => {
-    console.log('Form submitted:', values);
+  const handleSubmit = (formData: typeof initialValues) => {
+    console.log('Form submitted:', formData);
   };
 
   return (
