@@ -1,18 +1,18 @@
 import request from './util/request';
-import { LoginFormType, RegisterFormType } from '../routes/auth/types';
+import { RegisterUserInput, LoginUserInput } from '../validation/user';
 
-export const registerUser = async (formData: RegisterFormType) => {
-  const response = await request.post('/user/auth/register', formData);
+export const registerUser = async (formData: RegisterUserInput) => {
+  const response = await request.post('/user/register', formData);
   return response.data;
 };
 
-export const loginUser = async (formData: LoginFormType) => {
-  const response = await request.post('/user/auth/login', formData);
+export const loginUser = async (formData: LoginUserInput) => {
+  const response = await request.post('/user/login', formData);
   return response.data;
 };
 
 export const logoutUser = async () => {
-  const response = await request.post('/user/auth/logout');
+  const response = await request.post('/user/logout');
   return response.data;
 };
 

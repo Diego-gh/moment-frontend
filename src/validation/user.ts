@@ -21,13 +21,19 @@ const username = z
   .trim()
   .min(USERNAME_MIN_LENGTH)
   .max(USERNAME_MAX_LENGTH)
-  .toLowerCase();
+  .regex(
+    /^[a-zA-Z0-9_]+$/,
+    'Username can only contain letters, numbers, and underscores.'
+  );
 const displayName = z
   .string()
   .trim()
   .min(DISPLAY_NAME_MIN_LENGTH)
   .max(DISPLAY_NAME_MAX_LENGTH)
-  .optional();
+  .regex(
+    /^[a-zA-Z0-9_]+$/,
+    'Display name can only contain letters, numbers, and underscores.'
+  );
 
 // Schemas
 export const registerUserSchema = z.object({
@@ -41,3 +47,7 @@ export const loginUserSchema = z.object({
   email,
   password,
 });
+
+// Type definitions
+export type RegisterUserInput = z.infer<typeof registerUserSchema>;
+export type LoginUserInput = z.infer<typeof loginUserSchema>;
