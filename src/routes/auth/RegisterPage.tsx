@@ -6,6 +6,7 @@ import { zodResolver } from 'mantine-form-zod-resolver';
 import { AtSign } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useMutation } from '@tanstack/react-query';
+import { useNavigate } from 'react-router';
 import { registerUser } from '../../api/user';
 import {
   EMAIL_MAX_LENGTH,
@@ -29,11 +30,13 @@ const RegisterPage = () => {
 
   const [loading, setLoading] = useState(false);
 
+  const navigate = useNavigate();
+
   const mutation = useMutation({
     mutationFn: registerUser,
     onSuccess: (data) => {
       console.log('Registration successful:', data);
-      setLoading(false);
+      navigate('/');
     },
     onError: () => {
       notifications.show({
@@ -49,7 +52,9 @@ const RegisterPage = () => {
 
   const form = useForm({
     initialValues,
+    mode: 'uncontrolled',
     validate: zodResolver(registerUserSchema),
+    validateInputOnBlur: true,
   });
 
   const handleSubmit = (formData: typeof initialValues) => {
