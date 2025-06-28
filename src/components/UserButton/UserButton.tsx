@@ -1,25 +1,30 @@
 import { useNavigate } from 'react-router';
-import request from '../../api/util/request';
+import { useMutation } from '@tanstack/react-query';
+import { logoutUser } from '../../api/user';
+import authStore from '../../stores/auth';
 
 const UserButton = () => {
   const navigate = useNavigate();
 
-  const handleLogout = () => {
-    request
-      .post('/user/logout')
-      .then(() => {
-        console.log('Logout successful');
-        navigate('/login');
-      })
-      .catch((error) => {
-        console.error('Logout failed:', error);
-      });
-  };
+  const { currentUser, removeCurrentUser } = authStore();
+
+  const logoutMutation = useMutation({
+    mutationFn: logoutUser,
+    onSuccess: () => {
+      removeCurrentUser();
+      navigate('/login');
+    },
+    onError: (error) => {
+      console.error('Logout failed:', error);
+    },
+  });
 
   return (
-    <div>
-      <button onClick={handleLogout}>Logout</button>
-    </div>
+    <>
+      {currentUser && (
+        <button onClick={() => logoutMutation.mutate()}>Logout</button>
+      )}
+    </>
   );
 };
 

@@ -7,6 +7,7 @@ import { AtSign } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useMutation } from '@tanstack/react-query';
 import { useNavigate } from 'react-router';
+import axios from 'axios';
 import { registerUser } from '../../api/user';
 import {
   EMAIL_MAX_LENGTH,
@@ -15,6 +16,7 @@ import {
   DISPLAY_NAME_MAX_LENGTH,
   registerUserSchema,
 } from '../../validation/user';
+import authStore from '../../stores/auth';
 
 import css from './RegisterPage.module.css';
 
@@ -32,13 +34,21 @@ const RegisterPage = () => {
 
   const navigate = useNavigate();
 
+  const { setCurrentUser } = authStore();
+
   const mutation = useMutation({
     mutationFn: registerUser,
     onSuccess: (data) => {
-      console.log('Registration successful:', data);
+      setCurrentUser(data);
       navigate('/');
     },
-    onError: () => {
+    onError: (error) => {
+      let status = 0;
+      if (axios.isAxiosError(error)) {
+        status = error.response?.status ?? 0;
+        console.error('Registration error:', status);
+      }
+      // TODO: Handle specific error statuses
       notifications.show({
         color: 'red',
         title: t('auth.notification.register.error.title'),
